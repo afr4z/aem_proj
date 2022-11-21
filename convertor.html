@@ -1,0 +1,149 @@
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spherical Coordinate converter</title>
+    <style>
+        body{
+            text-align: center;
+        }
+        p{
+            font-weight:400;
+        }
+	fieldset {
+		width: 1000px;
+		margin: auto;
+		padding: 10px;
+
+	}
+	form{
+		padding:10px;
+	}
+	label{
+		padding-left: 10px;
+	}
+	legend{
+		margin:auto;
+	}
+
+    </style>
+</head>
+<body>
+    <h1>Spherical Vector Converter</h1>
+
+    <p>Enter Spherical Vector</p>
+    <form name="spherical" onsubmit="return false">
+    <label for="Ar">A<sub>r</sub>:</label>
+    <input type="number" id="Ar" step="any">
+    <label for="Atheta"><span>&nbsp;&nbsp;A<sub>&#952</sub></span></label>
+    <input type="number" id="Atheta"step="any">
+    <label for="Aphi"><span>&nbsp;&nbsp;A<sub>&#632</sub>;</span></label>
+    <input type="number" id="Aphi"step="any">
+    </form>
+
+    <p>Enter Spherical Coordinates</p>
+    <form name="spherical_coord" onsubmit="return false">
+    <label for="x">r:</label>
+    <input type="number" id="r" step="any">
+    <label for="y"><span>&nbsp;&nbsp;&#952</span></label>
+    <input type="number" id="theta"step="any">
+    <label for="z"><span>&nbsp;&nbsp;&#632</span></label>
+    <input type="number" id="phi"step="any">
+    <br><br>
+    <input type="submit" onclick="convert()">
+    </form>
+
+
+    <form name="cylindrical" >
+    <fieldset>
+    <legend>Cylindrical Vector</legend>
+    <label for="cyl_r">Ar:</label>
+    <input type="number" id="cyl_r" value="" readonly>
+    <label for="cyl_phy"><span>&nbsp;&nbsp;A&#632;</span></label>
+    <input type="number" id="cyl_phy" readonly>
+    <label for="cyl_z"><span>&nbsp;&nbsp;Az</span></label>
+    <input type="number" id="cyl_z" readonly>
+    </fieldset>
+    </form>
+    
+    <form name="cartesan" >
+    <fieldset>
+    <legend>Cartesan Vector</legend>
+    <label for="Ax">Ax</label>
+    <input type="number" id="Ax"readonly>
+    <label for="Ay"><span>&nbsp;&nbsp;Ay  </span></label>
+    <input type="number" id="Ay" readonly>
+    <label for="Az"><span>&nbsp;&nbsp;Az</span></label>
+    <input type="number" id="Az" readonly>
+    </fieldset>
+    </form>
+
+
+    <script>
+        function convert(){
+            let Ar = document.forms["spherical"]["Ar"].value;
+            let Aphi = document.forms["spherical"]["Aphi"].value;
+            let Atheta = document.forms["spherical"]["Atheta"].value;
+
+            let r = document.forms["spherical_coord"]["r"].value
+            let theta = document.forms["spherical_coord"]["theta"].value
+            let phi = document.forms["spherical_coord"]["phi"].value
+
+	    theta = (theta*Math.PI)/180
+            phi = (phi*Math.PI)/180		
+            
+	    console.log(theta,phi)
+
+            const xyz = [0,0,0]
+            const sph = [Ar,Atheta,Aphi]
+            const cyl = [0,0,0]
+
+
+            const sin_phy = Math.sin(phi)
+            const cos_phy = Math.cos(phi)
+            const sin_theta = Math.sin(theta)
+            const cos_theta = Math.cos(theta)
+            
+            
+            const sph_xyz = [[(sin_theta*cos_phy),(cos_theta*cos_phy),(-sin_phy)],
+                             [(sin_theta*sin_phy),(cos_theta*sin_phy),cos_phy],
+                             [cos_theta,-sin_theta,0]]
+
+            const sph_cyl = [[sin_theta,cos_theta,0],
+                             [0,0,1],[cos_theta,-sin_theta,0]]    
+            
+
+            multiply(sph_xyz,sph,xyz)
+            
+            multiply(sph_cyl,sph,cyl)
+
+
+            console.log(sph_xyz)
+            console.log(xyz)
+
+            document.forms["cartesan"]["Ax"].value = xyz[0]
+            document.forms["cartesan"]["Ay"].value = xyz[1]
+            document.forms["cartesan"]["Az"].value = xyz[2]
+
+            document.forms["cylindrical"]["cyl_r"].value = cyl[0]
+            document.forms["cylindrical"]["cyl_phy"].value = cyl[1]
+            document.forms["cylindrical"]["cyl_z"].value = cyl[2]
+            
+            }
+
+        function multiply(mat1, mat2, res)
+        {
+            let i, j, k;
+            for (i = 0; i < 3; i++) {
+                for (j = 0; j < 3; j++) {
+                    res[i] = 0;
+                    for (k = 0; k < 3; k++)
+                        res[i] += mat1[i][k] * mat2[k];
+                }
+            }
+        }
+    </script>
+</body>
+</html>
